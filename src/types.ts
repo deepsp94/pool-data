@@ -1,18 +1,18 @@
-type NativeAsset = {
+export type NativeAsset = {
   native_token: {
     denom: string;
   };
 };
 
-type CW20Asset = {
+export type CW20Asset = {
   token: {
     contract_addr: string;
   };
 };
 
-type AssetInfo = NativeAsset | CW20Asset;
+export type AssetInfo = NativeAsset | CW20Asset;
 
-type PoolInfo = {
+export type PoolInfo = {
   assets: {
     info: AssetInfo;
     amount: string;
@@ -20,14 +20,14 @@ type PoolInfo = {
   total_share: string;
 };
 
-type StablePoolRawConfig = {
+export type StablePoolRawConfig = {
   init_amp: number;
   init_amp_time: number;
   next_amp: number;
   next_amp_time: number;
 };
 
-type PCLPoolRawConfig = {
+export type PCLPoolRawConfig = {
   pool_params: {
     mid_fee: string;
     out_fee: string;
@@ -55,11 +55,11 @@ type PCLPoolRawConfig = {
   };
 };
 
-type PoolRawConfig = StablePoolRawConfig | PCLPoolRawConfig;
+export type PoolRawConfig = StablePoolRawConfig | PCLPoolRawConfig;
 
-const PROVIDE_LIQUIDITY_EVENT_TYPE = "provide-liquidity";
+export const PROVIDE_LIQUIDITY_EVENT_TYPE = "provide-liquidity";
 
-type ProvideLiquidityEventData = {
+export type ProvideLiquidityEventData = {
   dataType: typeof PROVIDE_LIQUIDITY_EVENT_TYPE;
   dataIndex: number;
   poolAddress: string;
@@ -69,9 +69,9 @@ type ProvideLiquidityEventData = {
   lpTokenAmount: string | null;
 };
 
-const WITHDRAW_LIQUIDITY_EVENT_TYPE = "withdraw-liquidity";
+export const WITHDRAW_LIQUIDITY_EVENT_TYPE = "withdraw-liquidity";
 
-type WithdrawLiquidityEventData = {
+export type WithdrawLiquidityEventData = {
   dataType: typeof WITHDRAW_LIQUIDITY_EVENT_TYPE;
   dataIndex: number;
   poolAddress: string;
@@ -80,9 +80,9 @@ type WithdrawLiquidityEventData = {
   assetAmounts: string[];
 };
 
-const SWAP_EVENT_TYPE = "swap";
+export const SWAP_EVENT_TYPE = "swap";
 
-type SwapEventData = {
+export type SwapEventData = {
   dataType: typeof SWAP_EVENT_TYPE;
   dataIndex: number;
   poolAddress: string;
