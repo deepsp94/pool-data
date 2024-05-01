@@ -100,7 +100,7 @@ async function main() {
         rawConfig.pool_state.price_state.last_price_update,
         rawConfig.pool_state.price_state.xcp_profit,
         rawConfig.pool_state.price_state.xcp_profit_real,
-        computeD,
+        computeD.data,
       ];
       console.log(row.join(","));
       data.push(row);
