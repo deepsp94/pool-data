@@ -11,7 +11,7 @@ const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 async function main() {
   // Check if the LCD_URL is provided in the .env file
-  const lcdUrl = process.env.LCD_URL;
+  const lcdUrl = process.env.LCD_URL || "https://rest-kralum.neutron-1.neutron.org/";
   if (!lcdUrl) {
     console.error("LCD_URL is not set in the environment variables. Please set it in the .env file.");
     return; // Exit the function if LCD_URL is not set
@@ -21,8 +21,8 @@ async function main() {
 
 
   const POOL_ADDRESS = "neutron1j4xpv03fw664mvntlhqnzp5hjqk2nfw00vrgx9qlq97rxc9fu3lqvmszl2";
-  const START_BLOCK_HEIGHT = 9295300;
-  const END_BLOCK_HEIGHT = 9700000;
+  const START_BLOCK_HEIGHT = 9769085-2;
+  const END_BLOCK_HEIGHT = 9769085;
 
   const data: any[] = [];
   for (let blockHeight = START_BLOCK_HEIGHT; blockHeight <= END_BLOCK_HEIGHT; blockHeight += 100) {
