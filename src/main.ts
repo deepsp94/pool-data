@@ -26,7 +26,7 @@ async function main() {
 
   const data: any[] = [];
   for (let blockHeight = START_BLOCK_HEIGHT; blockHeight <= END_BLOCK_HEIGHT; blockHeight += 100) {
-    const [timestamp, poolInfoResponse, rawConfig] = await Promise.all([
+    const [timestamp, poolInfoResponse, rawConfig, computeD] = await Promise.all([
       getBlockTimestampByHeight(blockHeight),
       querySmartContract(
         POOL_ADDRESS,
@@ -36,6 +36,13 @@ async function main() {
         blockHeight,
       ) as Promise<{ data: PoolInfo }>,
       queryRawContract<PCLPoolRawConfig>(POOL_ADDRESS, "config", blockHeight),
+      querySmartContract(
+        POOL_ADDRESS,
+        {
+          compute_d: {}
+        },
+        blockHeight,
+      ) as Promise<{ data: string }>,
     ]);
 
     if (!poolInfoResponse || !rawConfig) {
@@ -66,6 +73,7 @@ async function main() {
         "price_state:last_price_update",
         "price_state:xcp_profit",
         "price_state:xcp_profit_real",
+        "compute_d",
       ];
       console.log(row.join(","));
       data.push(row);
@@ -92,6 +100,7 @@ async function main() {
         rawConfig.pool_state.price_state.last_price_update,
         rawConfig.pool_state.price_state.xcp_profit,
         rawConfig.pool_state.price_state.xcp_profit_real,
+        computeD,
       ];
       console.log(row.join(","));
       data.push(row);
