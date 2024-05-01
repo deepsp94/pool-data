@@ -44,6 +44,41 @@ async function main() {
         blockHeight,
       ) as Promise<{ data: string }>,
     ]);
+    
+    const [simulateAB, simulateBA] = await Promise.all([
+      querySmartContract(
+        POOL_ADDRESS,
+        {
+          simulation: {
+            offer_asset: {
+              ...poolInfoResponse.data.assets[0],
+              amount: "1000000",              
+            }
+          }
+        },
+        blockHeight,
+      ) as Promise<{ data: {
+        "commission_amount": string,
+        "return_amount": string,
+        "spread_amount": string
+      } }>,
+      querySmartContract(
+        POOL_ADDRESS,
+        {
+          simulation: {
+            offer_asset: {
+              ...poolInfoResponse.data.assets[1],
+              amount: "2015369629413999357707",              
+            }
+          }
+        },
+        blockHeight,
+      ) as Promise<{ data: {
+        "commission_amount": string,
+        "return_amount": string,
+        "spread_amount": string
+      } }>,
+    ]);
 
     if (!poolInfoResponse || !rawConfig) {
       throw new Error("Some error ocurred while fetching data");
@@ -74,6 +109,12 @@ async function main() {
         "price_state:xcp_profit",
         "price_state:xcp_profit_real",
         "compute_d",
+        "simulate_ab_comission",
+        "simulate_ab_return_amount",
+        "simulate_ab_spread",
+        "simulate_ba_comission",
+        "simulate_ba_return_amount",
+        "simulate_ba_spread",
       ];
       console.log(row.join(","));
       data.push(row);
@@ -101,6 +142,12 @@ async function main() {
         rawConfig.pool_state.price_state.xcp_profit,
         rawConfig.pool_state.price_state.xcp_profit_real,
         computeD.data,
+        simulateAB.data.commission_amount,
+        simulateAB.data.return_amount,
+        simulateAB.data.spread_amount,
+        simulateBA.data.commission_amount,
+        simulateBA.data.return_amount,
+        simulateBA.data.spread_amount,
       ];
       console.log(row.join(","));
       data.push(row);
