@@ -25,6 +25,7 @@ export type StablePoolRawConfig = {
   init_amp_time: number;
   next_amp: number;
   next_amp_time: number;
+  cumulative_prices: [[AssetInfo, AssetInfo, string], [AssetInfo, AssetInfo, string]];
 };
 
 export type PCLPoolRawConfig = {
