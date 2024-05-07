@@ -4,7 +4,7 @@ dotenvConfig();
 import { normalizeAssetInfo } from "@/helpers";
 import { getBlockTimestampByHeight, initLCD, queryRawContract, querySmartContract } from "@/libs/lcd";
 import { num } from "@/libs/num";
-import { PoolInfo, PCLPoolRawConfig } from "./types";
+import { PoolInfo, PCLPoolRawConfig, StablePoolRawConfig } from "./types";
 import { writeFileSync } from "fs";
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -19,13 +19,13 @@ async function main() {
 
   initLCD(lcdUrl);
 
-  const POOL_ADDRESS = "neutron1j4xpv03fw664mvntlhqnzp5hjqk2nfw00vrgx9qlq97rxc9fu3lqvmszl2";
+  const POOL_ADDRESS = "neutron1adk7gupr0thjr3e6wcnlxr7ugclcg4cukv2np8la29dz38zuzymqjcv5s4";
   const START_BLOCK_HEIGHT = 9769085 - 2;
   const END_BLOCK_HEIGHT = 9769085;
 
   const data: any[] = [];
   for (let blockHeight = START_BLOCK_HEIGHT; blockHeight <= END_BLOCK_HEIGHT; blockHeight += 100) {
-    const [timestamp, poolInfoResponse, rawConfig, computeD] = await Promise.all([
+    const [timestamp, poolInfoResponse, rawConfig] = await Promise.all([
       getBlockTimestampByHeight(blockHeight),
       querySmartContract(
         POOL_ADDRESS,
@@ -34,14 +34,14 @@ async function main() {
         },
         blockHeight,
       ) as Promise<{ data: PoolInfo }>,
-      queryRawContract<PCLPoolRawConfig>(POOL_ADDRESS, "config", blockHeight),
-      querySmartContract(
-        POOL_ADDRESS,
-        {
-          compute_d: {},
-        },
-        blockHeight,
-      ) as Promise<{ data: string }>,
+      queryRawContract<StablePoolRawConfig>(POOL_ADDRESS, "config", blockHeight),
+      // querySmartContract(
+      //   POOL_ADDRESS,
+      //   {
+      //     compute_d: {},
+      //   },
+      //   blockHeight,
+      // ) as Promise<{ data: string }>,
     ]);
 
     const [simulateAB, simulateBA] = await Promise.all([
@@ -105,13 +105,11 @@ async function main() {
         // "future_amp",
         // "future_gamma",
         // "future_time",
-        "price_state:oracle_price",
-        "price_state:last_price",
-        "price_state:price_scale",
-        "price_state:last_price_update",
-        "price_state:xcp_profit",
-        "price_state:xcp_profit_real",
-        "compute_d",
+        "price_state:init_amp",
+        "price_state:init_amp_time",
+        "price_state:next_amp",
+        "price_state:next_amp_time",
+        // "compute_d",
         "simulate_ab_comission",
         "simulate_ab_return_amount",
         "simulate_ab_spread",
@@ -138,13 +136,11 @@ async function main() {
         // rawConfig.pool_state.future.amp,
         // rawConfig.pool_state.future.gamma,
         // rawConfig.pool_state.future_time,
-        rawConfig.pool_state.price_state.oracle_price,
-        rawConfig.pool_state.price_state.last_price,
-        rawConfig.pool_state.price_state.price_scale,
-        rawConfig.pool_state.price_state.last_price_update,
-        rawConfig.pool_state.price_state.xcp_profit,
-        rawConfig.pool_state.price_state.xcp_profit_real,
-        computeD.data,
+        rawConfig.init_amp,
+        rawConfig.init_amp_time,
+        rawConfig.next_amp,
+        rawConfig.next_amp_time,
+        // computeD.data,
         simulateAB.data.commission_amount,
         simulateAB.data.return_amount,
         simulateAB.data.spread_amount,
