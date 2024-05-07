@@ -4,10 +4,10 @@ dotenvConfig();
 import { normalizeAssetInfo } from "@/helpers";
 import { getBlockTimestampByHeight, initLCD, queryRawContract, querySmartContract } from "@/libs/lcd";
 import { num } from "@/libs/num";
-import { PoolInfo, PCLPoolRawConfig } from './types';
-import { writeFileSync } from 'fs';
+import { PoolInfo, PCLPoolRawConfig } from "./types";
+import { writeFileSync } from "fs";
 
-const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 async function main() {
   // Check if the LCD_URL is provided in the .env file
@@ -19,9 +19,8 @@ async function main() {
 
   initLCD(lcdUrl);
 
-
   const POOL_ADDRESS = "neutron1j4xpv03fw664mvntlhqnzp5hjqk2nfw00vrgx9qlq97rxc9fu3lqvmszl2";
-  const START_BLOCK_HEIGHT = 9769085-2;
+  const START_BLOCK_HEIGHT = 9769085 - 2;
   const END_BLOCK_HEIGHT = 9769085;
 
   const data: any[] = [];
@@ -39,12 +38,12 @@ async function main() {
       querySmartContract(
         POOL_ADDRESS,
         {
-          compute_d: {}
+          compute_d: {},
         },
         blockHeight,
       ) as Promise<{ data: string }>,
     ]);
-    
+
     const [simulateAB, simulateBA] = await Promise.all([
       querySmartContract(
         POOL_ADDRESS,
@@ -52,32 +51,36 @@ async function main() {
           simulation: {
             offer_asset: {
               ...poolInfoResponse.data.assets[0],
-              amount: "1000000",              
-            }
-          }
+              amount: "1000000",
+            },
+          },
         },
         blockHeight,
-      ) as Promise<{ data: {
-        "commission_amount": string,
-        "return_amount": string,
-        "spread_amount": string
-      } }>,
+      ) as Promise<{
+        data: {
+          commission_amount: string;
+          return_amount: string;
+          spread_amount: string;
+        };
+      }>,
       querySmartContract(
         POOL_ADDRESS,
         {
           simulation: {
             offer_asset: {
               ...poolInfoResponse.data.assets[1],
-              amount: "2015369629413999357707",              
-            }
-          }
+              amount: "2015369629413999357707",
+            },
+          },
         },
         blockHeight,
-      ) as Promise<{ data: {
-        "commission_amount": string,
-        "return_amount": string,
-        "spread_amount": string
-      } }>,
+      ) as Promise<{
+        data: {
+          commission_amount: string;
+          return_amount: string;
+          spread_amount: string;
+        };
+      }>,
     ]);
 
     if (!poolInfoResponse || !rawConfig) {
@@ -155,7 +158,7 @@ async function main() {
       await sleep(10); // Milliseconds
     }
 
-    const csvContent = data.map(row => row.join(",")).join("\n");
+    const csvContent = data.map((row) => row.join(",")).join("\n");
 
     writeFileSync("price_data.csv", csvContent);
 
