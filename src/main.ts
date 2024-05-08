@@ -25,7 +25,7 @@ async function main() {
 
   const data: any[] = [];
   for (let blockHeight = START_BLOCK_HEIGHT; blockHeight <= END_BLOCK_HEIGHT; blockHeight += 100) {
-    const [timestamp, poolInfoResponse, rawConfig] = await Promise.all([
+    const [timestamp, poolInfoResponse, rawConfig, computeD] = await Promise.all([
       getBlockTimestampByHeight(blockHeight),
       querySmartContract(
         POOL_ADDRESS,
@@ -35,13 +35,13 @@ async function main() {
         blockHeight,
       ) as Promise<{ data: PoolInfo }>,
       queryRawContract<StablePoolRawConfig>(POOL_ADDRESS, "config", blockHeight),
-      // querySmartContract(
-      //   POOL_ADDRESS,
-      //   {
-      //     compute_d: {},
-      //   },
-      //   blockHeight,
-      // ) as Promise<{ data: string }>,
+      querySmartContract(
+        POOL_ADDRESS,
+        {
+          query_compute_d: {},
+        },
+        blockHeight,
+      ) as Promise<{ data: string }>,
     ]);
 
     const [simulateAB, simulateBA] = await Promise.all([
@@ -87,6 +87,8 @@ async function main() {
       throw new Error("Some error ocurred while fetching data");
     }
 
+    console.log(rawConfig);
+
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const asset1 = poolInfoResponse.data.assets[0]!;
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -111,7 +113,7 @@ async function main() {
         "next_amp_time",
         "cumulative_price_0",
         "cumulative_price_1",
-        // "compute_d",
+        "compute_d",
         "simulate_ab_comission",
         "simulate_ab_return_amount",
         "simulate_ab_spread",
@@ -144,7 +146,7 @@ async function main() {
         rawConfig.next_amp_time,
         rawConfig.cumulative_prices[0][2],
         rawConfig.cumulative_prices[1][2],
-        // computeD.data,
+        computeD.data,
         simulateAB.data.commission_amount,
         simulateAB.data.return_amount,
         simulateAB.data.spread_amount,
